@@ -30,3 +30,29 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Ignore database files (if using SQLite in dev/test)
+*.sqlite3
+*.sqlite3-journal
+
+# Ignore byebug command history file
+.byebug_history
+
+# Ignore node/yarn dependencies (if you add JS tooling later)
+node_modules/
+yarn-error.log
+
+# Ignore coverage reports (if you use SimpleCov or similar)
+coverage/
+
+# Ignore system test screenshots
+/tmp/screenshots/
+
+# Ignore IDE/editor configs
+.vscode/
+.idea/
+*.swp
+
+# Ignore OS-specific junk
+.DS_Store
+Thumbs.db
