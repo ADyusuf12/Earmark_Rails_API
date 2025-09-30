@@ -6,7 +6,7 @@ module Api
       private
 
       def respond_with(resource, _opts = {})
-        token = request.env['warden-jwt_auth.token']
+        token = request.env["warden-jwt_auth.token"]
         render json: {
           access: token,
           user: {
