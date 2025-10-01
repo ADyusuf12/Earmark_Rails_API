@@ -13,7 +13,7 @@ module Api
             resource.destroy
             return render json: {
               status: { code: 422, message: "Invalid account_type" },
-              errors: ["account_type must be one of: #{UserProfile::ACCOUNT_TYPES.join(', ')}"]
+              errors: [ "account_type must be one of: #{UserProfile::ACCOUNT_TYPES.join(', ')}" ]
             }, status: :unprocessable_entity
           end
 
