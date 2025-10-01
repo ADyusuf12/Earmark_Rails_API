@@ -4,5 +4,15 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
 
-  validates :username, presence: true, uniqueness: true
+  has_one :user_profile, dependent: :destroy
+
+  validates :username, presence: true, uniqueness: { case_sensitive: false }
+
+  after_create :create_default_profile
+
+  private
+
+  def create_default_profile
+    create_user_profile!(account_type: "customer")
+  end
 end
