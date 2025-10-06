@@ -8,7 +8,7 @@ class Api::V1::ProfilesController < ApplicationController
   def update
     profile = current_user.user_profile
     if profile.nil?
-      render json: { errors: ["Profile not found"] }, status: :not_found
+      render json: { errors: [ "Profile not found" ] }, status: :not_found
       return
     end
 
