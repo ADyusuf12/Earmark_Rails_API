@@ -8,7 +8,7 @@
 /.bundle
 
 # Ignore all environment files.
-/.env*
+/env*
 
 # Ignore all logfiles and tempfiles.
 /log/*
@@ -30,6 +30,10 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Ignore Rails credentials master key and all environment keys
+config/master.key
+config/credentials/*.key
 
 # Ignore database files (if using SQLite in dev/test)
 *.sqlite3
@@ -56,3 +60,5 @@ coverage/
 # Ignore OS-specific junk
 .DS_Store
 Thumbs.db
+
+/config/credentials/development.key

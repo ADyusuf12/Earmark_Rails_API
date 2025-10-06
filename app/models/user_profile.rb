@@ -5,4 +5,6 @@ class UserProfile < ApplicationRecord
   belongs_to :user
 
   validates :account_type, presence: true, inclusion: { in: ACCOUNT_TYPES }
+  validates :first_name, length: { maximum: 50 }, allow_blank: true
+  validates :last_name, length: { maximum: 50 }, allow_blank: true
 end

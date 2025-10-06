@@ -14,6 +14,10 @@ Rails.application.routes.draw do
         delete "logout", to: "api/v1/sessions#destroy"
         post "register", to: "api/v1/registrations#create"
       end
+
+      get "profile", to: "api/v1/profiles#show"
+      patch "profile", to: "api/v1/profiles#update"
+      put "profile", to: "api/v1/profiles#update"
     end
   end
 
