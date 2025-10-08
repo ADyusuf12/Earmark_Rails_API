@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
 
   has_one :user_profile, dependent: :destroy
+  has_many :listings, dependent: :destroy
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
 
