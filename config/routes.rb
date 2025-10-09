@@ -15,16 +15,8 @@ Rails.application.routes.draw do
         post "register", to: "api/v1/registrations#create"
       end
 
-      get "profile", to: "api/v1/profiles#show"
-      patch "profile", to: "api/v1/profiles#update"
-      put "profile", to: "api/v1/profiles#update"
-
-      get "listings", to: "api/v1/listings#index"
-      post "listings", to: "api/v1/listings#create"
-      get "listings/:id", to: "api/v1/listings#show"
-      put "listings/:id", to: "api/v1/listings#update"
-      patch "listings/:id", to: "api/v1/listings#update"
-      delete "listings/:id", to: "api/v1/listings#destroy"
+      resource :user_profile, only: [ :show, :update ], controller: "api/v1/user_profiles"
+      resources :listings, controller: "api/v1/listings"
     end
   end
 
