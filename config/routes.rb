@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
       resource :user_profile, only: [ :show, :update ], controller: "api/v1/user_profiles"
       resources :listings, controller: "api/v1/listings"
+      resources :saved_listings, only: [ :index, :create, :destroy ], controller: "api/v1/saved_listings"
     end
   end
 
