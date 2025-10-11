@@ -1,10 +1,25 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  scope :api do
+    scope :v1 do
+      devise_for :users,
+                 defaults: { format: :json },
+                 skip: [ :passwords ],
+                 controllers: {
+                  sessions: "api/v1/sessions",
+                  registrations: "api/v1/registrations"
+                 }
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+      devise_scope :user do
+        post   "login",  to: "api/v1/sessions#create"
+        delete "logout", to: "api/v1/sessions#destroy"
+        post "register", to: "api/v1/registrations#create"
+      end
+
+      resource :user_profile, only: [ :show, :update ], controller: "api/v1/user_profiles"
+      resources :listings, controller: "api/v1/listings"
+      resources :saved_listings, only: [ :index, :create, :destroy ], controller: "api/v1/saved_listings"
+    end
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end

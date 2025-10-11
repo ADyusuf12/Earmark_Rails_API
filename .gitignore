@@ -8,7 +8,7 @@
 /.bundle
 
 # Ignore all environment files.
-/.env*
+/env*
 
 # Ignore all logfiles and tempfiles.
 /log/*
@@ -30,3 +30,35 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Ignore Rails credentials master key and all environment keys
+config/master.key
+config/credentials/*.key
+
+# Ignore database files (if using SQLite in dev/test)
+*.sqlite3
+*.sqlite3-journal
+
+# Ignore byebug command history file
+.byebug_history
+
+# Ignore node/yarn dependencies (if you add JS tooling later)
+node_modules/
+yarn-error.log
+
+# Ignore coverage reports (if you use SimpleCov or similar)
+coverage/
+
+# Ignore system test screenshots
+/tmp/screenshots/
+
+# Ignore IDE/editor configs
+.vscode/
+.idea/
+*.swp
+
+# Ignore OS-specific junk
+.DS_Store
+Thumbs.db
+
+/config/credentials/development.key
