@@ -49,7 +49,7 @@ group :development, :test do
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
 
-  gem "rspec-rails", "~> 6.0.0"
+  gem "rspec-rails", "~> 8.0.2"
   gem "factory_bot_rails"
   gem "faker", "~> 2.20"
 
