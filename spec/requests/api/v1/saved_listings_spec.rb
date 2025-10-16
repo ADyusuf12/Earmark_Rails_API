@@ -64,4 +64,45 @@ RSpec.describe "SavedListings API", type: :request do
       expect(json["errors"]).to include("Not found")
     end
   end
+
+  describe "authorization" do
+    let(:other_user) { create(:user, password: "password123") }
+    let!(:other_listing) { create(:listing, user: other_user, title: "Other Listing") }
+
+    it "denies access without a token" do
+      get resource_url
+      expect(response).to have_http_status(:unauthorized)
+
+      post resource_url, params: { listing_id: listing.id }
+      expect(response).to have_http_status(:unauthorized)
+
+      delete "#{resource_url}/#{listing.id}"
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "prevents one user from deleting another user's saved listing" do
+      # other_user saves a listing
+      post "/api/v1/login", params: { user: { email: other_user.email, password: "password123" } }, as: :json
+      other_token = JSON.parse(response.body)["access"]
+      post resource_url, params: { listing_id: other_listing.id }, headers: { "Authorization" => "Bearer #{other_token}" }, as: :json
+
+      # now try to delete with the first user's token
+      delete "#{resource_url}/#{other_listing.id}", headers: headers
+      expect(response).to have_http_status(:forbidden)
+      expect(json["errors"]).to include("Not authorized")
+    end
+
+    it "allows admin to delete any saved listing" do
+      admin = create(:user, :admin, password: "password123", account_type: "owner")
+      post "/api/v1/login", params: { user: { email: admin.email, password: "password123" } }, as: :json
+      admin_token = JSON.parse(response.body)["access"]
+
+      # user saves a listing
+      post resource_url, params: { listing_id: listing.id }, headers: headers, as: :json
+
+      # admin deletes it
+      delete "#{resource_url}/#{listing.id}", headers: { "Authorization" => "Bearer #{admin_token}" }
+      expect(response).to have_http_status(:no_content)
+    end
+  end
 end

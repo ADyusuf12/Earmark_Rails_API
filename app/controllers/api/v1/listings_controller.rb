@@ -1,14 +1,13 @@
 module Api
   module V1
     class ListingsController < ApplicationController
+      include Pundit::Authorization
       include Rails.application.routes.url_helpers
 
-      before_action :authenticate_user!
       before_action :set_listing, only: [ :show, :update, :destroy ]
-      before_action :authorize_owner!, only: [ :update, :destroy ]
 
       def index
-        listings = ListingsQuery.new(Listing.all, params).call
+        listings = ListingsQuery.new(Listing.all, query_params).call
         render json: {
           listings: listings.map { |l| serialize_listing(l) },
           meta: {
@@ -27,6 +26,8 @@ module Api
 
       def create
         listing = current_user.listings.build(listing_params)
+        authorize listing
+
         if listing.save
           render json: serialize_listing(listing), status: :created
         else
@@ -35,6 +36,8 @@ module Api
       end
 
       def update
+        authorize @listing
+
         if @listing.update(listing_params)
           render json: serialize_listing(@listing), status: :ok
         else
@@ -43,6 +46,7 @@ module Api
       end
 
       def destroy
+        authorize @listing
         @listing.destroy
         head :no_content
       end
@@ -53,13 +57,12 @@ module Api
         @listing = Listing.find(params[:id])
       end
 
-      def authorize_owner!
-        return if @listing.user == current_user
-        render json: { errors: [ "Not authorized" ] }, status: :forbidden
-      end
-
       def listing_params
         params.require(:listing).permit(:title, :description, :price, :location, images: [])
+      end
+
+      def query_params
+        params.permit(:location, :min_price, :max_price, :q, :sort, :page, :per_page)
       end
 
       def serialize_listing(listing)
@@ -69,7 +72,7 @@ module Api
             username: listing.user.username,
             email: listing.user.email
           },
-          images: listing.images.map { |img| url_for(img) }
+          images: listing.images.map { |img| Rails.application.routes.url_helpers.rails_blob_path(img, only_path: true) }
         )
       end
     end
