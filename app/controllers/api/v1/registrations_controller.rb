@@ -4,21 +4,19 @@ module Api
       respond_to :json
 
       def create
+        account_type = sign_up_params[:account_type].presence
+
+        unless UserProfile::ACCOUNT_TYPES.include?(account_type)
+          return render json: {
+            status: { code: 422, message: "Invalid account_type" },
+            errors: [ "account_type must be one of: #{UserProfile::ACCOUNT_TYPES.join(', ')}" ]
+          }, status: :unprocessable_entity
+        end
+
         build_resource(sign_up_params.except(:account_type))
+        resource.account_type = account_type
 
         if resource.save
-          account_type = sign_up_params[:account_type].presence || "customer"
-
-          unless UserProfile::ACCOUNT_TYPES.include?(account_type)
-            resource.destroy
-            return render json: {
-              status: { code: 422, message: "Invalid account_type" },
-              errors: [ "account_type must be one of: #{UserProfile::ACCOUNT_TYPES.join(', ')}" ]
-            }, status: :unprocessable_entity
-          end
-
-          resource.user_profile.update!(account_type: account_type)
-
           token = Warden::JWTAuth::UserEncoder.new.call(resource, :user, nil).first
 
           render json: {

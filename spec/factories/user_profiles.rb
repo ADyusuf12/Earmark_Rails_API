@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :user_profile do
-    association :user
+    association :user, factory: [ :user ], strategy: :build
     account_type { "customer" }
     first_name   { Faker::Name.first_name }
     last_name    { Faker::Name.last_name }
@@ -27,6 +27,13 @@ FactoryBot.define do
           content_type: "image/jpeg"
         )
       end
+    end
+
+    trait :minimal do
+      first_name { nil }
+      last_name { nil }
+      phone_number { nil }
+      bio { nil }
     end
   end
 end
