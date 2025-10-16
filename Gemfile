@@ -51,7 +51,7 @@ group :development, :test do
 
   gem "rspec-rails", "~> 6.0.0"
   gem "factory_bot_rails"
-  gem "faker", "~> 2.20"
+  gem "faker", "~> 3.5"
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
