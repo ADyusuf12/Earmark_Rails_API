@@ -4,7 +4,7 @@ module Api
       include Pundit::Authorization
       include Rails.application.routes.url_helpers
 
-      before_action :set_listing, only: [ :show, :update, :destroy ]
+      before_action :set_listing, only: [ :show ]
 
       def index
         listings = ListingsQuery.new(Listing.all, query_params).call
@@ -24,41 +24,10 @@ module Api
         render json: serialize_listing(@listing), status: :ok
       end
 
-      def create
-        listing = current_user.listings.build(listing_params)
-        authorize listing
-
-        if listing.save
-          render json: serialize_listing(listing), status: :created
-        else
-          render json: { errors: listing.errors.full_messages }, status: :unprocessable_entity
-        end
-      end
-
-      def update
-        authorize @listing
-
-        if @listing.update(listing_params)
-          render json: serialize_listing(@listing), status: :ok
-        else
-          render json: { errors: @listing.errors.full_messages }, status: :unprocessable_entity
-        end
-      end
-
-      def destroy
-        authorize @listing
-        @listing.destroy
-        head :no_content
-      end
-
       private
 
       def set_listing
         @listing = Listing.find(params[:id])
-      end
-
-      def listing_params
-        params.require(:listing).permit(:title, :description, :price, :location, images: [])
       end
 
       def query_params
@@ -66,13 +35,17 @@ module Api
       end
 
       def serialize_listing(listing)
-        listing.as_json(only: [ :id, :title, :description, :price, :location, :created_at, :updated_at ]).merge(
+        listing.as_json(
+          only: [ :id, :title, :description, :price, :location, :created_at, :updated_at ]
+        ).merge(
           user: {
             id: listing.user.id,
             username: listing.user.username,
             email: listing.user.email
           },
-          images: listing.images.map { |img| Rails.application.routes.url_helpers.rails_blob_path(img, only_path: true) }
+          images: listing.images.map do |img|
+            Rails.application.routes.url_helpers.rails_blob_path(img, only_path: true)
+          end
         )
       end
     end
