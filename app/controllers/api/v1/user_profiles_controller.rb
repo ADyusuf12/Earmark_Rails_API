@@ -2,19 +2,29 @@ class Api::V1::UserProfilesController < ApplicationController
   before_action :authenticate_user!
 
   def show
-    profile = current_user.user_profile
+    profile =
+      if params[:id]
+        User.find(params[:id]).user_profile
+      else
+        current_user.user_profile
+      end
     authorize profile
-    render json: serialize_profile(current_user), status: :ok
+    render json: serialize_profile(profile.user), status: :ok
   end
 
   def update
-    profile = current_user.user_profile
+    profile =
+      if params[:id]
+        User.find(params[:id]).user_profile
+      else
+        current_user.user_profile
+      end
     return render json: { errors: [ "Profile not found" ] }, status: :not_found unless profile
 
     authorize profile
 
     if profile.update(profile_params)
-      render json: serialize_profile(current_user), status: :ok
+      render json: serialize_profile(profile.user), status: :ok
     else
       render json: { errors: profile.errors.full_messages }, status: :unprocessable_entity
     end
