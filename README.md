@@ -1,105 +1,163 @@
-🛠️ Rails API with JWT Authentication and User Profiles
-This project is a Ruby on Rails API‑only application that provides user authentication with Devise + JWT and supports role‑based profiles through a UserProfile model.
+# 🏠 Earmark Real Estate API
 
-🚀 Features
-User registration and login with JWT authentication
+A **Ruby on Rails API‑only application** for managing real estate listings, users, and profiles.
+Features **JWT authentication with Devise**, **role‑based access control with Pundit**, and a growing set of endpoints for listings, saved properties, dashboards, and more.
 
-Stateless sessions using devise-jwt
+This project is being developed as a **personal learning project**, following best practices in GitHub workflow, testing, and clean code.
 
-Automatic creation of a UserProfile for each user
+---
 
-Supported account types: customer (default), agent, developer, owner
+## 🚀 Features
 
-Request specs and model specs with RSpec, FactoryBot, and Shoulda‑Matchers
+- **Authentication & Profiles**
+  - **Devise + JWT** for registration and login
+  - Stateless sessions with `devise-jwt`
+  - Automatic creation of a `UserProfile` for each user
+  - Supported account types: `customer` (default), `agent`, `developer`, `owner`
+  - Role‑based access control with **Pundit**
 
-📂 Project Structure
-app/models/user.rb – Devise user model with JWT and profile callback
+- **Listings**
+  - Full **CRUD** for property listings
+  - **Filtering**, keyword **search**, and **sorting** (price, newest, etc.)
+  - **Pagination** with Kaminari
+  - **Image uploads** with Active Storage
 
-app/models/user_profile.rb – Profile model with account type validation
+- **Saved Listings**
+  - Save/unsave listings
+  - Prevent duplicates with DB uniqueness constraints
 
-app/controllers/api/v1/registrations_controller.rb – Custom registration with profile handling
+- **Dashboards**
+  - User dashboards with owned listings and stats
+  - Overview endpoints for quick insights
 
-spec/requests/registrations_spec.rb – Request specs for registration
+- **Security & Trust**
+  - JWT‑protected endpoints
+  - Role‑based authorization policies
+  - Pre‑commit hooks with RuboCop for linting and format‑on‑save
 
-spec/models/user_spec.rb – User model specs
+- **Testing**
+  - Request specs for major endpoints
+  - Model & policy specs with **RSpec, FactoryBot, Shoulda‑Matchers**
+  - Green test suite (local)
 
-spec/models/user_profile_spec.rb – UserProfile model specs
+---
 
-spec/factories/ – Factories for users and profiles
+## 📂 Project Structure
 
-🔑 Authentication Endpoints
-Register: POST /api/v1/register
+app/models/user.rb                # Devise user with JWT + profile callback
+app/models/user_profile.rb        # Profile model with account type validation
+app/models/listing.rb             # Listing model with validations and attachments
 
-Creates a new user and profile (defaults to customer if no account_type provided).
+app/controllers/api/v1/auth/...   # Sessions, Registrations
+app/controllers/api/v1/user_profile_controller.rb
+app/controllers/api/v1/listings_controller.rb
+app/controllers/api/v1/dashboard/overviews_controller.rb
+app/controllers/api/v1/dashboard/listings_controller.rb
 
-Login: POST /api/v1/login
+app/queries/listings_query.rb     # Filtering, sorting, pagination
 
-Returns a JWT access token and user data.
+spec/requests/...                 # Request specs for API endpoints
+spec/models/...                   # Model specs (associations, validations)
+spec/policies/...                 # Pundit policy specs
+spec/factories/...                # FactoryBot factories
 
-Logout: DELETE /api/v1/logout
 
-Revokes the JWT token.
+---
 
-Responses include a JWT access token and user/profile data.
+## 🔑 API Endpoints (Highlights)
 
-✅ Includes
-Request specs for registration and profile creation
+- **Auth**
+  - `POST /api/v1/register` → Create user + profile
+  - `POST /api/v1/login` → Return JWT + user data
+  - `DELETE /api/v1/logout` → Revoke JWT
 
-Model specs for associations, validations, and callbacks
+- **Profile**
+  - `GET /api/v1/user_profile` → Current user + profile
+  - `PATCH /api/v1/user_profile` → Update profile fields (e.g., account_type, first_name, last_name)
 
-🛠️ Setup
-Clone the repo
+- **Listings**
+  - `GET /api/v1/listings` → All listings (filters, keyword search `q`, sorting `sort`, pagination `page`/`per_page`)
+  - `POST /api/v1/listings` → Create listing (JWT required)
+  - `PATCH /api/v1/listings/:id` → Update owned listing
+  - `DELETE /api/v1/listings/:id` → Delete owned listing
 
-git clone <your-repo-url>
+- **Saved Listings**
+  - `GET /api/v1/saved_listings` → Current user’s saved listings
+  - `POST /api/v1/saved_listings` → Save by `listing_id`
+  - `DELETE /api/v1/saved_listings/:id` → Unsave by `listing_id`
 
-cd <your-repo-folder>
+- **Dashboard**
+  - `GET /api/v1/dashboard/overview` → Stats + recent listings
+  - `GET /api/v1/dashboard/listings` → CRUD scoped to current user’s listings
 
-Install dependencies
+---
 
+## 🛠️ Setup
+
+```bash
+# Clone the repo
+git clone https://github.com/ADyusuf12/earmark.git
+cd earmark
+
+# Install dependencies
 bundle install
+yarn install
 
-Set up the database
-
+# Set up database
 rails db:create db:migrate
 
-Run the server
-
+# Run the server
 rails s
+Visit: http://localhost:3000
 
-🧪 Testing
-Run the test suite with:
+---
 
+## 🧪 Testing
+
+```bash
 bundle exec rspec
+Covers:
 
-This will run:
+- Auth (login, registration, logout)
+- Profiles (show/update)
+- Listings (CRUD, filters, keyword search, sorting, pagination)
+- Saved listings (index/create/destroy)
+- Dashboards (overview + scoped listings)
+- Policies (RBAC with Pundit)
 
-Request specs for registration and profile creation
+---
 
-Model specs for associations, validations, and callbacks
+## 🧰 Developer Experience
 
-📌 Next Steps
-Add role‑specific models (Agent, Developer, Owner)
+- RuboCop for linting and auto‑correct (`rubocop -A`)
+- VS Code + Ruby LSP extension for linting/formatting/IntelliSense
+- Pre‑commit hook to run RuboCop and/or test suite
+- Clean Git history with feature branches and PRs to `dev` before merging to `main`
 
-Implement authorization (for example, Pundit or CanCanCan)
+---
 
-Expand API endpoints for profile management
+## 📌 Roadmap
 
-🤝 Contributing
-Fork the repository
+- [ ] Profile enrichment (bio, contact info, profile picture + upload)
+- [ ] Categories, tags, and geolocation for listings (map/near‑me)
+- [ ] Messaging + notifications (email/in‑app)
+- [ ] Background jobs with Sidekiq (image processing, notifications)
+- [ ] Caching & performance optimization
+- [ ] Analytics (views, inquiries, conversions)
+- [ ] Mobile app integration (React Native / Flutter)
 
-Create a new branch
+---
 
-git checkout -b feature/your-feature
+## 🤝 Contributing
 
-Commit your changes
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit changes: `git commit -m "Add some feature"`
+4. Push branch: `git push origin feature/your-feature`
+5. Open a Pull Request
 
-git commit -m "Add some feature"
+---
 
-Push to the branch
+## 📜 License
 
-git push origin feature/your-feature
-
-Open a Pull Request
-
-📜 License
-This project is licensed under the MIT License.
+This project is licensed under the **MIT License**.
