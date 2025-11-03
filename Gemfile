@@ -58,7 +58,7 @@ group :development, :test do
   gem "rubocop", require: false
   gem "rubocop-rails", require: false
 
-  gem "shoulda-matchers", "~> 6.0"
+  gem "shoulda-matchers", "~> 7.0"
 
   gem "pry-rails"
   gem "pry-byebug"
