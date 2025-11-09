@@ -4,11 +4,13 @@ module Api
       before_action :authenticate_user!
 
       def index
+        authorize SavedListing
         saved = current_user.saved_listings.includes(:listing)
         render json: saved.map { |s| serialize_listing(s.listing) }, status: :ok
       end
 
       def create
+        authorize SavedListing
         saved = current_user.saved_listings.build(listing_id: params[:listing_id])
         if saved.save
           render json: { message: "Listing saved" }, status: :created
@@ -18,8 +20,9 @@ module Api
       end
 
       def destroy
-        saved = current_user.saved_listings.find_by(listing_id: params[:id])
+        saved = SavedListing.find_by(listing_id: params[:id])
         if saved
+          authorize saved
           saved.destroy
           head :no_content
         else

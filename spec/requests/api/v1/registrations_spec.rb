@@ -8,7 +8,8 @@ RSpec.describe "Registrations API", type: :request do
           email: "newuser@example.com",
           username: "newbie",
           password: "password123",
-          password_confirmation: "password123"
+          password_confirmation: "password123",
+          account_type: "customer"
         }
       }, as: :json
 
@@ -23,7 +24,8 @@ RSpec.describe "Registrations API", type: :request do
           email: "bademail",
           username: "",
           password: "short",
-          password_confirmation: "mismatch"
+          password_confirmation: "mismatch",
+          account_type: "customer"
         }
       }, as: :json
 
@@ -32,13 +34,14 @@ RSpec.describe "Registrations API", type: :request do
     end
 
     context "with user profiles" do
-      it "creates a user with default customer profile" do
+      it "creates a user with customer profile" do
         post "/api/v1/register", params: {
           user: {
             email: "cust@example.com",
             username: "custy",
             password: "password123",
-            password_confirmation: "password123"
+            password_confirmation: "password123",
+            account_type: "customer"
           }
         }, as: :json
 

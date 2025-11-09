@@ -1,14 +1,13 @@
 module Api
   module V1
     class ListingsController < ApplicationController
+      include Pundit::Authorization
       include Rails.application.routes.url_helpers
 
-      before_action :authenticate_user!
-      before_action :set_listing, only: [ :show, :update, :destroy ]
-      before_action :authorize_owner!, only: [ :update, :destroy ]
+      before_action :set_listing, only: [ :show ]
 
       def index
-        listings = ListingsQuery.new(Listing.all, params).call
+        listings = ListingsQuery.new(Listing.all, query_params).call
         render json: {
           listings: listings.map { |l| serialize_listing(l) },
           meta: {
@@ -25,51 +24,28 @@ module Api
         render json: serialize_listing(@listing), status: :ok
       end
 
-      def create
-        listing = current_user.listings.build(listing_params)
-        if listing.save
-          render json: serialize_listing(listing), status: :created
-        else
-          render json: { errors: listing.errors.full_messages }, status: :unprocessable_entity
-        end
-      end
-
-      def update
-        if @listing.update(listing_params)
-          render json: serialize_listing(@listing), status: :ok
-        else
-          render json: { errors: @listing.errors.full_messages }, status: :unprocessable_entity
-        end
-      end
-
-      def destroy
-        @listing.destroy
-        head :no_content
-      end
-
       private
 
       def set_listing
         @listing = Listing.find(params[:id])
       end
 
-      def authorize_owner!
-        return if @listing.user == current_user
-        render json: { errors: [ "Not authorized" ] }, status: :forbidden
-      end
-
-      def listing_params
-        params.require(:listing).permit(:title, :description, :price, :location, images: [])
+      def query_params
+        params.permit(:location, :min_price, :max_price, :q, :sort, :page, :per_page)
       end
 
       def serialize_listing(listing)
-        listing.as_json(only: [ :id, :title, :description, :price, :location, :created_at, :updated_at ]).merge(
+        listing.as_json(
+          only: [ :id, :title, :description, :price, :location, :created_at, :updated_at ]
+        ).merge(
           user: {
             id: listing.user.id,
             username: listing.user.username,
             email: listing.user.email
           },
-          images: listing.images.map { |img| url_for(img) }
+          images: listing.images.map do |img|
+            url_for(img)
+          end
         )
       end
     end

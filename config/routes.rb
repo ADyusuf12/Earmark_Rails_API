@@ -15,9 +15,16 @@ Rails.application.routes.draw do
         post "register", to: "api/v1/registrations#create"
       end
 
+      get "home", to: "api/v1/home#index"
       resource :user_profile, only: [ :show, :update ], controller: "api/v1/user_profiles"
+      resources :user_profiles, only: [ :show, :update ], controller: "api/v1/user_profiles"
       resources :listings, controller: "api/v1/listings"
       resources :saved_listings, only: [ :index, :create, :destroy ], controller: "api/v1/saved_listings"
+
+      scope :dashboard, module: "api/v1/dashboard" do
+        resource :overview, only: [ :show ], controller: "overviews"
+        resources :listings, only: [ :index, :create, :show, :update, :destroy ]
+      end
     end
   end
 
