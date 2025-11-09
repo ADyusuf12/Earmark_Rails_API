@@ -65,3 +65,7 @@ group :development, :test do
 end
 
 gem "pundit", "~> 2.5"
+
+gem "dockerfile-rails", ">= 1.7", group: :development
+
+gem "aws-sdk-s3", "~> 1.203", require: false
