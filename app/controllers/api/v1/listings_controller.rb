@@ -44,7 +44,7 @@ module Api
             email: listing.user.email
           },
           images: listing.images.map do |img|
-            Rails.application.routes.url_helpers.rails_blob_path(img, only_path: true)
+            url_for(img)
           end
         )
       end

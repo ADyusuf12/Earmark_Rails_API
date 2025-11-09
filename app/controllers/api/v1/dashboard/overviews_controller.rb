@@ -25,7 +25,7 @@ module Api
 
         def serialize_listing(listing)
           listing.as_json(only: [ :id, :title, :price, :created_at ]).merge(
-            images: listing.images.map { |img| Rails.application.routes.url_helpers.rails_blob_path(img, only_path: true) }
+            images: listing.images.map { |img| url_for(img) }
           )
         end
       end
