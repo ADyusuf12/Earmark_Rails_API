@@ -1,6 +1,7 @@
 module Api
   module V1
     class SavedListingsController < ApplicationController
+      respond_to :json
       before_action :authenticate_user!
 
       def index

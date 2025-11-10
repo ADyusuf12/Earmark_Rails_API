@@ -2,6 +2,7 @@ module Api
   module V1
     module Dashboard
       class OverviewsController < ApplicationController
+        respond_to :json
         include Pundit::Authorization
 
         before_action :authenticate_user!

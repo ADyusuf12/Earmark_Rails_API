@@ -1,18 +1,17 @@
 Rails.application.routes.draw do
-  scope :api do
+  scope :api, defaults: { format: :json } do
     scope :v1 do
       devise_for :users,
-                 defaults: { format: :json },
                  skip: [ :passwords ],
                  controllers: {
-                  sessions: "api/v1/sessions",
-                  registrations: "api/v1/registrations"
+                   sessions: "api/v1/sessions",
+                   registrations: "api/v1/registrations"
                  }
 
       devise_scope :user do
         post   "login",  to: "api/v1/sessions#create"
         delete "logout", to: "api/v1/sessions#destroy"
-        post "register", to: "api/v1/registrations#create"
+        post   "register", to: "api/v1/registrations#create"
       end
 
       get "home", to: "api/v1/home#index"
@@ -27,4 +26,6 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  get "/up", to: proc { [ 200, {}, [ "OK" ] ] }
 end
