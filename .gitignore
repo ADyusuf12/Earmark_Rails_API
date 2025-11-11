@@ -9,6 +9,7 @@
 
 # Ignore all environment files.
 /env*
+.env
 
 # Ignore all logfiles and tempfiles.
 /log/*
@@ -62,3 +63,9 @@ coverage/
 Thumbs.db
 
 /config/credentials/development.key
+
+# Docker-related files
+.dockerignore
+docker-compose.override.yml
+Dockerfile.local
+.docker/
