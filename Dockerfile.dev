@@ -18,6 +18,11 @@ RUN bundle install
 # Copy the rest of the app
 COPY . .
 
+# Add entrypoint
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
+
 # Expose Rails default port
 EXPOSE 3000
 
