@@ -10,6 +10,7 @@ class User < ApplicationRecord
   has_many :listings, dependent: :destroy
   has_many :saved_listings, dependent: :destroy
   has_many :saved_listed_listings, through: :saved_listings, source: :listing
+  has_many :enquiries, dependent: :destroy
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
 
