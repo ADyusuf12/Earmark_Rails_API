@@ -5,20 +5,30 @@ FactoryBot.define do
     password { "password123" }
     password_confirmation { "password123" }
 
-    transient do
-      account_type { "customer" } # default role for tests unless overridden
-    end
-
-    # Pass account_type into the model so the after_create callback can use it
     before(:create) do |user, evaluator|
       user.account_type = evaluator.account_type
     end
 
     trait :admin do
-      admin { true }
+      role { :admin }
     end
 
-    # Trait for enriched profile
+    trait :customer do
+      account_type { "customer" }
+    end
+
+    trait :agent do
+      account_type { "agent" }
+    end
+
+    trait :property_developer do
+      account_type { "property_developer" }
+    end
+
+    trait :property_owner do
+      account_type { "property_owner" }
+    end
+
     trait :with_enriched_profile do
       after(:create) do |user|
         user.user_profile.update!(
@@ -30,7 +40,6 @@ FactoryBot.define do
       end
     end
 
-    # Trait for profile with picture
     trait :with_profile_picture do
       after(:create) do |user|
         user.user_profile.profile_picture.attach(

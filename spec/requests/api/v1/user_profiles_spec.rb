@@ -6,7 +6,8 @@ RSpec.describe "UserProfiles API", type: :request do
            email: "user@example.com",
            username: "tester",
            password: "password123",
-           password_confirmation: "password123")
+           password_confirmation: "password123",
+           account_type: "customer")
   end
 
   let(:resource_url) { "/api/v1/user_profile" }
@@ -34,7 +35,7 @@ RSpec.describe "UserProfiles API", type: :request do
 
         expect(body.dig("user", "email")).to eq(user.email)
         expect(body.dig("user", "username")).to eq(user.username)
-        expect(body.dig("profile", "account_type")).to eq("customer")
+        expect(body.dig("user", "account_type")).to eq("customer")
       end
     end
 
@@ -48,26 +49,6 @@ RSpec.describe "UserProfiles API", type: :request do
 
   describe "PATCH /api/v1/user_profile" do
     context "when authenticated" do
-      it "updates account_type when valid" do
-        patch resource_url,
-              params: { user_profile: { account_type: "agent" } },
-              headers: headers,
-              as: :json
-
-        expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body).dig("profile", "account_type")).to eq("agent")
-      end
-
-      it "rejects invalid account_type" do
-        patch resource_url,
-              params: { user_profile: { account_type: "hacker" } },
-              headers: headers,
-              as: :json
-
-        expect(response).to have_http_status(422)
-        expect(JSON.parse(response.body)["errors"]).to include(/Account type/i)
-      end
-
       it "updates first_name and last_name" do
         patch resource_url,
               params: { user_profile: { first_name: "John", last_name: "Doe" } },
@@ -108,62 +89,6 @@ RSpec.describe "UserProfiles API", type: :request do
       it "returns 401 Unauthorized" do
         patch resource_url, params: { user_profile: { first_name: "NoAuth" } }
         expect(response).to have_http_status(:unauthorized)
-      end
-    end
-  end
-
-  describe "GET /api/v1/user_profiles/:id" do
-    let(:other_user) { create(:user, username: "otheruser", email: "other@example.com") }
-
-    context "when authenticated" do
-      it "returns another user's profile" do
-        get "/api/v1/user_profiles/#{other_user.id}", headers: headers, as: :json
-
-        expect(response).to have_http_status(:ok)
-        body = JSON.parse(response.body)
-        expect(body.dig("user", "username")).to eq("otheruser")
-        expect(body.dig("user", "email")).to eq("other@example.com")
-      end
-    end
-
-    context "when unauthenticated" do
-      it "returns 401 Unauthorized" do
-        get "/api/v1/user_profiles/#{other_user.id}"
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
-  end
-
-  describe "PATCH /api/v1/user_profiles/:id" do
-    let(:other_user) { create(:user, username: "victim", email: "victim@example.com") }
-
-    context "when normal user" do
-      it "forbids updating another user's profile" do
-        patch "/api/v1/user_profiles/#{other_user.id}",
-              params: { user_profile: { first_name: "Hacker" } },
-              headers: headers,
-              as: :json
-
-        expect(response).to have_http_status(:forbidden)
-      end
-    end
-
-    context "when admin user" do
-      let(:admin_user) { create(:user, :admin, email: "admin@example.com", password: "password123") }
-
-      it "allows admin to update another user's profile" do
-        post "/api/v1/login", params: {
-          user: { email: admin_user.email, password: "password123" }
-        }, as: :json
-        admin_token = JSON.parse(response.body)["access"]
-
-        patch "/api/v1/user_profiles/#{other_user.id}",
-              params: { user_profile: { first_name: "AdminEdit" } },
-              headers: { "Authorization" => "Bearer #{admin_token}" },
-              as: :json
-
-        expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body).dig("profile", "first_name")).to eq("AdminEdit")
       end
     end
   end

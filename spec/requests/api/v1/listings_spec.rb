@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Public Listings API", type: :request do
-  let(:user) { create(:user, account_type: "owner", password: "password123") }
+  let(:user) { create(:user, account_type: "property_owner", password: "password123") }
   let!(:listing) { create(:listing, user: user, title: "Test Listing", price: 100.0, location: "Abuja") }
 
   let(:resource_url) { "/api/v1/listings" }
