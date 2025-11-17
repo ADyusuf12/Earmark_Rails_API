@@ -6,15 +6,16 @@ module Api
       def create
         account_type = sign_up_params[:account_type].presence
 
-        unless UserProfile::ACCOUNT_TYPES.include?(account_type)
+        # validate against the enum keys on User
+        unless User.account_types.keys.include?(account_type)
           return render json: {
             status: { code: 422, message: "Invalid account_type" },
-            errors: [ "account_type must be one of: #{UserProfile::ACCOUNT_TYPES.join(', ')}" ]
+            errors: [ "account_type must be one of: #{User.account_types.keys.join(', ')}" ]
           }, status: :unprocessable_entity
         end
 
-        build_resource(sign_up_params.except(:account_type))
-        resource.account_type = account_type
+        # build user with account_type directly
+        build_resource(sign_up_params)
 
         if resource.save
           token = Warden::JWTAuth::UserEncoder.new.call(resource, :user, nil).first
@@ -24,11 +25,17 @@ module Api
             user: {
               id: resource.id,
               username: resource.username,
-              email: resource.email
+              email: resource.email,
+              account_type: resource.account_type
             },
             profile: {
               id: resource.user_profile.id,
-              account_type: resource.user_profile.account_type
+              first_name: resource.user_profile.first_name,
+              last_name: resource.user_profile.last_name,
+              phone_number: resource.user_profile.phone_number,
+              bio: resource.user_profile.bio,
+              profile_picture_url: resource.user_profile.profile_picture.attached? ?
+                Rails.application.routes.url_helpers.rails_blob_url(resource.user_profile.profile_picture, only_path: true) : nil
             }
           }, status: :ok
         else

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_14_142307) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_17_141509) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -71,6 +71,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_14_142307) do
     t.index ["user_id"], name: "index_listings_on_user_id"
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.bigint "enquiry_id", null: false
+    t.bigint "sender_id", null: false
+    t.text "body", null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enquiry_id"], name: "index_messages_on_enquiry_id"
+    t.index ["sender_id"], name: "index_messages_on_sender_id"
+  end
+
   create_table "saved_listings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "listing_id", null: false
@@ -83,14 +94,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_14_142307) do
 
   create_table "user_profiles", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "account_type", default: "customer", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "first_name"
     t.string "last_name"
     t.string "phone_number"
     t.text "bio"
-    t.index ["account_type"], name: "index_user_profiles_on_account_type"
     t.index ["user_id"], name: "index_user_profiles_on_user_id", unique: true
   end
 
@@ -105,6 +114,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_14_142307) do
     t.datetime "updated_at", null: false
     t.integer "role", default: 0, null: false
     t.boolean "admin", default: false
+    t.integer "account_type", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -114,6 +124,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_14_142307) do
   add_foreign_key "enquiries", "listings"
   add_foreign_key "enquiries", "users"
   add_foreign_key "listings", "users"
+  add_foreign_key "messages", "enquiries"
+  add_foreign_key "messages", "users", column: "sender_id"
   add_foreign_key "saved_listings", "listings"
   add_foreign_key "saved_listings", "users"
   add_foreign_key "user_profiles", "users"

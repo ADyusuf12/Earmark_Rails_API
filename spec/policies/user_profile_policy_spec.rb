@@ -1,9 +1,9 @@
 require "rails_helper"
 
 RSpec.describe UserProfilePolicy do
-  let(:owner)  { create(:user, account_type: "owner") }
+  let(:owner)  { create(:user, account_type: "property_owner") }
   let(:other)  { create(:user, account_type: "customer") }
-  let(:admin)  { create(:user, :admin, account_type: "owner") }
+  let(:admin)  { create(:user, :admin, account_type: "property_owner") }
 
   let(:owner_profile)  { owner.user_profile }
   let(:other_profile)  { other.user_profile }

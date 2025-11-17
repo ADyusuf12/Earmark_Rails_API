@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe SavedListingPolicy do
   let(:user)     { create(:user, account_type: "customer") }
   let(:other)    { create(:user, account_type: "customer") }
-  let(:admin)    { create(:user, :admin, account_type: "owner") }
+  let(:admin)    { create(:user, :admin, account_type: "property_owner") }
 
   let(:listing)  { create(:listing, user: other) }
   let(:saved)    { create(:saved_listing, user: user, listing: listing) }

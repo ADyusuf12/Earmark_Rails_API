@@ -1,22 +1,29 @@
 require "rails_helper"
 
-RSpec.describe UserProfile, type: :model do
+RSpec.describe User, type: :model do
+  subject { build(:user) }  # ensures valid baseline
+
   describe "associations" do
-    it { should belong_to(:user) }
+    it { should have_one(:user_profile).dependent(:destroy) }
   end
 
   describe "validations" do
-    it { should validate_presence_of(:account_type) }
+    it { should validate_presence_of(:username) }
 
-    it "allows only valid account types" do
-      UserProfile::ACCOUNT_TYPES.each do |type|
-        profile = build(:user_profile, account_type: type)
-        expect(profile).to be_valid
-      end
+    it "validates uniqueness of username case-insensitively" do
+      create(:user, username: "tester", email: "unique1@example.com")
+      duplicate = build(:user, username: "TESTER", email: "unique2@example.com")
 
-      invalid_profile = build(:user_profile, account_type: "hacker")
-      expect(invalid_profile).not_to be_valid
-      expect(invalid_profile.errors[:account_type]).to include("is not included in the list")
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors[:username]).to include("has already been taken")
+    end
+  end
+
+  describe "callbacks" do
+    it "creates a default user_profile after creation" do
+      user = create(:user)
+      expect(user.user_profile).to be_present
+      expect(user.account_type).to eq("customer")
     end
   end
 end

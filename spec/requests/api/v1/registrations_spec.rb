@@ -1,6 +1,10 @@
 require "rails_helper"
 
 RSpec.describe "Registrations API", type: :request do
+  def json
+    JSON.parse(response.body)
+  end
+
   describe "POST /api/v1/register" do
     it "registers a new user" do
       post "/api/v1/register", params: {
@@ -16,6 +20,7 @@ RSpec.describe "Registrations API", type: :request do
       expect(response).to have_http_status(:ok)
       expect(json["access"]).to be_present
       expect(json["user"]["email"]).to eq("newuser@example.com")
+      expect(json["user"]["account_type"]).to eq("customer")
     end
 
     it "rejects invalid data" do
@@ -33,8 +38,8 @@ RSpec.describe "Registrations API", type: :request do
       expect(json["errors"]).to be_present
     end
 
-    context "with user profiles" do
-      it "creates a user with customer profile" do
+    context "with account types" do
+      it "creates a user with customer account_type" do
         post "/api/v1/register", params: {
           user: {
             email: "cust@example.com",
@@ -46,10 +51,10 @@ RSpec.describe "Registrations API", type: :request do
         }, as: :json
 
         expect(response).to have_http_status(:ok)
-        expect(json["profile"]["account_type"]).to eq("customer")
+        expect(json["user"]["account_type"]).to eq("customer")
       end
 
-      it "creates a user with agent profile" do
+      it "creates a user with agent account_type" do
         post "/api/v1/register", params: {
           user: {
             email: "agent@example.com",
@@ -61,7 +66,7 @@ RSpec.describe "Registrations API", type: :request do
         }, as: :json
 
         expect(response).to have_http_status(:ok)
-        expect(json["profile"]["account_type"]).to eq("agent")
+        expect(json["user"]["account_type"]).to eq("agent")
       end
 
       it "rejects invalid account_type" do
@@ -76,7 +81,9 @@ RSpec.describe "Registrations API", type: :request do
         }, as: :json
 
         expect(response).to have_http_status(422)
-        expect(json["errors"]).to include("account_type must be one of: agent, developer, owner, customer")
+        expect(json["errors"]).to include(
+          "account_type must be one of: #{User.account_types.keys.join(', ')}"
+        )
       end
     end
   end

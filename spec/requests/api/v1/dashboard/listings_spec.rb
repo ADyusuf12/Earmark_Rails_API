@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Dashboard Listings API", type: :request do
-  let(:user) { create(:user, account_type: "owner", password: "password123") }
-  let(:other_user) { create(:user, account_type: "owner", password: "password123") }
+  let(:user) { create(:user, account_type: "property_owner", password: "password123") }
+  let(:other_user) { create(:user, account_type: "property_owner", password: "password123") }
 
   let!(:listings) { create_list(:listing, 3, user: user) }
   let!(:other_listing) { create(:listing, user: other_user) }

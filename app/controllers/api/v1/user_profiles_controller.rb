@@ -33,7 +33,7 @@ class Api::V1::UserProfilesController < ApplicationController
   private
 
   def profile_params
-    params.require(:user_profile).permit(:account_type, :first_name, :last_name, :phone_number, :bio, :profile_picture)
+    params.require(:user_profile).permit(:first_name, :last_name, :phone_number, :bio, :profile_picture)
   end
 
   def serialize_profile(user)
@@ -42,11 +42,11 @@ class Api::V1::UserProfilesController < ApplicationController
       user: {
         id: user.id,
         email: user.email,
-        username: user.username
+        username: user.username,
+        account_type: user.account_type # moved here
       },
       profile: profile && {
         id: profile.id,
-        account_type: profile.account_type,
         first_name: profile.first_name,
         last_name: profile.last_name,
         phone_number: profile.phone_number,

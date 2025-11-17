@@ -1,11 +1,11 @@
 require "rails_helper"
 
 RSpec.describe ListingPolicy do
-  let(:owner)     { create(:user, account_type: "owner") }
+  let(:owner)     { create(:user, account_type: "property_owner") }
   let(:agent)     { create(:user, account_type: "agent") }
-  let(:developer) { create(:user, account_type: "developer") }
+  let(:developer) { create(:user, account_type: "property_developer") }
   let(:customer)  { create(:user, account_type: "customer") }
-  let(:admin)     { create(:user, :admin, account_type: "owner") }
+  let(:admin)     { create(:user, :admin, account_type: "property_owner") }
 
   let(:owners_listing) { create(:listing, user: owner) }
 
@@ -53,7 +53,7 @@ RSpec.describe ListingPolicy do
     end
 
     it "denies non‑owners" do
-      other_owner = create(:user, account_type: "owner")
+      other_owner = create(:user, account_type: "property_owner")
       others_listing = create(:listing, user: other_owner)
       expect(described_class.new(owner, others_listing).update?).to eq(false)
     end

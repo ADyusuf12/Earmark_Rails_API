@@ -93,7 +93,7 @@ RSpec.describe "SavedListings API", type: :request do
     end
 
     it "allows admin to delete any saved listing" do
-      admin = create(:user, :admin, password: "password123", account_type: "owner")
+      admin = create(:user, :admin, password: "password123", account_type: "property_owner")
       post "/api/v1/login", params: { user: { email: admin.email, password: "password123" } }, as: :json
       admin_token = JSON.parse(response.body)["access"]
 
