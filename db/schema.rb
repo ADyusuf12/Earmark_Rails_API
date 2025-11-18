@@ -71,17 +71,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_17_141509) do
     t.index ["user_id"], name: "index_listings_on_user_id"
   end
 
-  create_table "messages", force: :cascade do |t|
-    t.bigint "enquiry_id", null: false
-    t.bigint "sender_id", null: false
-    t.text "body", null: false
-    t.datetime "read_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["enquiry_id"], name: "index_messages_on_enquiry_id"
-    t.index ["sender_id"], name: "index_messages_on_sender_id"
-  end
-
   create_table "saved_listings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "listing_id", null: false
@@ -124,8 +113,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_17_141509) do
   add_foreign_key "enquiries", "listings"
   add_foreign_key "enquiries", "users"
   add_foreign_key "listings", "users"
-  add_foreign_key "messages", "enquiries"
-  add_foreign_key "messages", "users", column: "sender_id"
   add_foreign_key "saved_listings", "listings"
   add_foreign_key "saved_listings", "users"
   add_foreign_key "user_profiles", "users"

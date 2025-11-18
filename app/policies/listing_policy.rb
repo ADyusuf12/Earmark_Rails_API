@@ -30,6 +30,6 @@ class ListingPolicy < ApplicationPolicy
   end
 
   def user_has_role?(*roles)
-    roles.include?(user.account_type.to_sym)
+    roles.map(&:to_s).include?(user.account_type)
   end
 end
