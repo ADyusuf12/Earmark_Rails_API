@@ -8,16 +8,20 @@ RSpec.describe "Enquiries API", type: :request do
   let(:owner_headers) { { "Authorization" => "Bearer #{jwt_token_for(owner)}" } }
 
   describe "POST /api/v1/listings/:listing_id/enquiries" do
-    it "creates an enquiry for a listing" do
+    it "creates an enquiry and its first message" do
       post "/api/v1/listings/#{listing.id}/enquiries",
            params: { enquiry: { message: "Is this still available?" } },
            headers: headers
 
       expect(response).to have_http_status(:created)
       json = JSON.parse(response.body)
-      expect(json["message"]).to eq("Is this still available?")
+
+      # Enquiry metadata
       expect(json["listing_id"]).to eq(listing.id)
       expect(json["sender"]["id"]).to eq(user.id)
+
+      # First message in thread
+      expect(json["messages"].first["body"]).to eq("Is this still available?")
     end
 
     it "rejects invalid enquiry" do
@@ -41,12 +45,11 @@ RSpec.describe "Enquiries API", type: :request do
 
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
-      expect(json.first["message"]).to eq("Hello owner")
+      expect(json.first["messages"].first["body"]).to eq("Hello owner")
     end
 
     it "forbids non-owners from viewing enquiries" do
       get "/api/v1/listings/#{listing.id}/enquiries", headers: headers
-
       expect(response).to have_http_status(:forbidden)
     end
   end
@@ -61,7 +64,7 @@ RSpec.describe "Enquiries API", type: :request do
 
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
-      expect(json.first["message"]).to eq("Interested in this property")
+      expect(json.first["messages"].first["body"]).to eq("Interested in this property")
       expect(json.first["sender"]["id"]).to eq(user.id)
     end
   end

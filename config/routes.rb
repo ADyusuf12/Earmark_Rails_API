@@ -19,7 +19,9 @@ Rails.application.routes.draw do
       resource :user_profile, only: [ :show, :update ], controller: "api/v1/user_profiles"
       resources :user_profiles, only: [ :show, :update ], controller: "api/v1/user_profiles"
       resources :listings, controller: "api/v1/listings" do
-        resources :enquiries, only: [ :create, :index ], controller: "api/v1/enquiries"
+        resources :enquiries, only: [ :create, :index ], controller: "api/v1/enquiries" do
+          resources :messages, only: [ :index, :create ], controller: "api/v1/messages"
+        end
       end
       get "enquiries", to: "api/v1/enquiries#my_enquiries"
       resources :saved_listings, only: [ :index, :create, :destroy ], controller: "api/v1/saved_listings"

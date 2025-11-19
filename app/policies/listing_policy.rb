@@ -19,6 +19,10 @@ class ListingPolicy < ApplicationPolicy
     admin? || (user_owns_listing? && user_has_role?(:property_owner, :agent, :property_developer))
   end
 
+  def show_enquiries?
+    admin? || user.present? && user_owns_listing?
+  end
+
   private
 
   def admin?

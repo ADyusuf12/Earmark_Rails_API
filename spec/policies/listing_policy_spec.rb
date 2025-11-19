@@ -67,4 +67,17 @@ RSpec.describe ListingPolicy do
       expect(described_class.new(customer, cust_listing).destroy?).to eq(false)
     end
   end
+
+  describe "#show_enquiries?" do
+    it "allows the owner of the listing" do
+      expect(described_class.new(owner, owners_listing).show_enquiries?).to eq(true)
+    end
+
+    it "denies non‑owners" do
+      expect(described_class.new(customer, owners_listing).show_enquiries?).to eq(false)
+      expect(described_class.new(agent, owners_listing).show_enquiries?).to eq(false)
+      expect(described_class.new(developer, owners_listing).show_enquiries?).to eq(false)
+      expect(described_class.new(admin, owners_listing).show_enquiries?).to eq(true) # admin doesn’t own this listing
+    end
+  end
 end
